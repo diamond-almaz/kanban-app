@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ITask } from '../types/interfaces/task.interface';
 import { TaskStatus } from '../types/enums/task-status.enum';
 import { tasksList } from './mock-data';
+import { CommonModule } from '@angular/common';
+import {MatBadgeModule} from '@angular/material/badge';
+import { KanbanTaskCardComponent } from './kanban-task-card/kanban-task-card.component';
 
 const TASK_COLUMN_TITLES = {
   [TaskStatus.Waiting]: 'Waiting',
@@ -10,9 +13,18 @@ const TASK_COLUMN_TITLES = {
   [TaskStatus.Completed]: 'Completed',
 }
 
+const TASK_COLUMN_CLASSES = {
+  [TaskStatus.Waiting]: 'waiting',
+  [TaskStatus.Paused]: 'paused',
+  [TaskStatus.InProgress]: 'in-progress',
+  [TaskStatus.Completed]: 'completed',
+}
+
+
 interface ITaskColumn {
-  name: string;
+  title: string;
   status: TaskStatus;
+  htmlClass: string;
   count: number;
   list: ITask[]
 }
@@ -20,13 +32,17 @@ interface ITaskColumn {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, MatBadgeModule, KanbanTaskCardComponent],
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss'
 })
-export class KanbanComponent {
-  columns!: ITaskColumn[];
+export class KanbanComponent implements OnInit {
+  columns?: ITaskColumn[];
   tasks = tasksList;
+
+  ngOnInit() {
+    this.columns = this.computeColumns();
+  }
 
   computeColumns() {
     const columnsObj = {} as { [key in TaskStatus]: ITaskColumn };
@@ -36,8 +52,9 @@ export class KanbanComponent {
     TaskStatus.InProgress,
     TaskStatus.Completed].forEach((status) => {
       columnsObj[status] = {
-        name: TASK_COLUMN_TITLES[status],
+        title: TASK_COLUMN_TITLES[status],
         status,
+        htmlClass: TASK_COLUMN_CLASSES[status],
         count: 0,
         list: [],
       }

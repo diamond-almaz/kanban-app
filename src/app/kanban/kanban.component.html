@@ -1,3 +1,16 @@
-@for (column of columns; track column.status) {
-
-}
+<main>
+  @if (columns) {
+    @for (column of columns; track column.status) {
+      <div class="column" [ngClass]="column.htmlClass">
+        <header>
+          <span [matBadge]="column.count" matBadgeOverlap="false">{{column.title}}</span>
+        </header>
+        <div class="tasks-list">
+          @for (task of column.list; track $index) {
+            <app-kanban-task-card [task]="task" />
+          }
+        </div>
+      </div>
+    }
+  }
+</main>

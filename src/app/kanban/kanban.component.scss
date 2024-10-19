@@ -1,0 +1,36 @@
+
+:host {
+  display: grid;
+  &, main, .tasks-list {
+    min-height: 100%;
+  }
+
+  main {
+    display: flex;
+    gap: 20px;
+
+    .column {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      $offset: 12px;
+      padding: $offset $offset 0 $offset;
+      border-radius: 8px;
+      width: 25%;
+      gap: $offset;
+      background-color: #e4e4e4;
+
+      header {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .tasks-list {
+        display: flex;
+        flex-direction: column;
+        gap: $offset;
+        padding-bottom: $offset;
+        overflow-y: auto;
+      }
+    }
+  }
+}
