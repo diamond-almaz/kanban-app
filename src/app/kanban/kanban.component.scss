@@ -1,3 +1,7 @@
+$draggingWaiting: red;
+$draggingPaused: grey;
+$draggingInProgress: blue;
+$draggingCompleted: green;
 
 :host {
   display: grid;
@@ -24,12 +28,62 @@
         font-weight: 500;
       }
 
-      .tasks-list {
-        display: flex;
-        flex-direction: column;
-        gap: $offset;
-        padding-bottom: $offset;
-        overflow-y: auto;
+      .drop-lists-container {
+        position: relative;
+        .tasks-list {
+          display: flex;
+          flex-direction: column;
+          gap: $offset;
+          padding-bottom: $offset;
+          overflow-y: auto;
+        }
+
+        .placeholder-list {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: 12px;
+          backdrop-filter: blur(10px);
+          border-width: 3px;
+          border-style: dashed;
+          box-sizing: border-box;
+          transition: .2s;
+        }
+      }
+
+      &.waiting {
+        .placeholder-list {
+          border-color: $draggingWaiting;
+          &:hover {
+            background-color: rgba($draggingWaiting, 0.1);
+          }
+        }
+      }
+      &.paused {
+        .placeholder-list {
+          border-color: $draggingPaused;
+          &:hover {
+            background-color: rgba($draggingPaused, 0.1);
+          }
+        }
+      }
+      &.in-progress {
+        .placeholder-list {
+          border-color: $draggingInProgress;
+          &:hover {
+            background-color: rgba($draggingInProgress, 0.1);
+          }
+        }
+
+      }
+      &.completed {
+        .placeholder-list {
+          border-color: $draggingCompleted;
+          &:hover {
+            background-color: rgba($draggingCompleted, 0.1);
+          }
+        }
       }
     }
   }

@@ -1,16 +1,49 @@
-<main>
-  @if (columns) {
-    @for (column of columns; track column.status) {
-      <div class="column" [ngClass]="column.htmlClass">
-        <header>
-          <span [matBadge]="column.count" matBadgeOverlap="false">{{column.title}}</span>
-        </header>
-        <div class="tasks-list">
-          @for (task of column.list; track $index) {
-            <app-kanban-task-card [task]="task" />
-          }
-        </div>
+<main cdkDropListGroup>
+  @if (columns) { @for (column of columns; track column.status) {
+  <div
+    class="column"
+    [ngClass]="column.htmlClass"
+  >
+    <header>
+      <span [matBadge]="column.count" matBadgeOverlap="false">{{
+        column.title
+      }}</span>
+    </header>
+    <div class="drop-lists-container">
+      <div
+        class="tasks-list"
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        [cdkDropListConnectedTo]="draggingData && draggingData.fromStatus === column.status ? draggingData.arr : []"
+        [id]="column.status"
+        [cdkDropListSortingDisabled]="true"
+        (cdkDropListEntered)="cdkDropListEntered($event)"
+      >
+        @for (task of column.list; track $index) {
+        <app-kanban-task-card
+          [task]="task"
+          cdkDrag
+          [cdkDragData]="task"
+          (cdkDragStarted)="onDragStarted($event)"
+          (cdkDragEnded)="onDragEnded()"
+          (cdkDragDropped)="onDropListDropped($event)"
+        />
+        }
       </div>
-    }
-  }
+      @if (draggingData) {
+        @if (draggingData.statuses[column.status]) {
+          @for (item of draggingData.statuses[column.status]!.transitions; track $index) {
+            <div
+              class="placeholder-list"
+              cdkDropList
+              [cdkDropListConnectedTo]="draggingData.statuses[column.status]!.connectedTo"
+              [id]="item"
+              (cdkDropListEntered)="cdkDropListEntered($event)"
+            ></div>
+          }
+        }
+      }
+    </div>
+  </div>
+  } }
 </main>
