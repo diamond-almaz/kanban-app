@@ -14,7 +14,6 @@
         class="tasks-list"
         cdkDropList
         cdkDropListOrientation="vertical"
-        [cdkDropListConnectedTo]="draggingData && draggingData.fromStatus === column.status ? draggingData.arr : []"
         [id]="column.status"
         [cdkDropListSortingDisabled]="true"
         [cdkDropListEnterPredicate]="cdkDropListEnterPredicate"
@@ -37,7 +36,6 @@
             <div
               class="placeholder-list"
               cdkDropList
-              [cdkDropListConnectedTo]="draggingData.statuses[column.status]!.connectedTo"
               [id]="item"
               (cdkDropListEntered)="cdkDropListEntered($event)"
             ></div>

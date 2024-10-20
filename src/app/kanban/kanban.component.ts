@@ -43,13 +43,10 @@ export class KanbanComponent implements OnInit {
   tasks = tasksList;
 
   draggingData?: {
-    fromStatus: TaskStatus;
     statuses: {
       [key in TaskStatus]?: {
-        connectedTo: TaskStatus;
         transitions: TaskTransitions[]}
     },
-    arr: TaskTransitions[];
   }
 
   TaskStatus = TaskStatus;
@@ -99,61 +96,47 @@ export class KanbanComponent implements OnInit {
     switch (task.status) {
       case TaskStatus.Paused: {
         this.draggingData = {
-          fromStatus: task.status,
           statuses: {
             [TaskStatus.InProgress]: {
               transitions: [TaskTransitions.toWork],
-              connectedTo: task.status,
             },
             [TaskStatus.Waiting]: {
               transitions: [TaskTransitions.return],
-              connectedTo: task.status,
             }
           },
-          arr: [TaskTransitions.toWork, TaskTransitions.return]
         }
         break;
       }
       case TaskStatus.Waiting: {
         this.draggingData = {
-          fromStatus: task.status,
           statuses: {
             [TaskStatus.InProgress]: {
               transitions: [TaskTransitions.toWork],
-              connectedTo: task.status,
             }
           },
-          arr: [TaskTransitions.toWork]
         }
         break;
       }
       case TaskStatus.Completed: {
         this.draggingData = {
-          fromStatus: task.status,
           statuses: {
             [TaskStatus.Waiting]: {
               transitions: [TaskTransitions.return],
-              connectedTo: task.status,
             }
           },
-          arr: [TaskTransitions.return],
         }
         break;
       }
       case TaskStatus.InProgress: {
         this.draggingData = {
-          fromStatus: task.status,
           statuses: {
             [TaskStatus.Completed]: {
               transitions: [TaskTransitions.toClose],
-              connectedTo: task.status
             },
             [TaskStatus.Paused]: {
               transitions: [TaskTransitions.toPause],
-              connectedTo: task.status
             },
           },
-          arr: [TaskTransitions.toClose, TaskTransitions.toPause]
         }
         break;
       }
