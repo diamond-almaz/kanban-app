@@ -173,4 +173,8 @@ export class KanbanComponent implements OnInit {
     console.log(this.draggingData?.statuses)
     console.log('entered to', ev.container.id)
   }
+
+  cdkDropListEnterPredicate() {
+    return false;
+  }
 }

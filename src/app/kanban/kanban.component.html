@@ -17,9 +17,10 @@
         [cdkDropListConnectedTo]="draggingData && draggingData.fromStatus === column.status ? draggingData.arr : []"
         [id]="column.status"
         [cdkDropListSortingDisabled]="true"
+        [cdkDropListEnterPredicate]="cdkDropListEnterPredicate"
         (cdkDropListEntered)="cdkDropListEntered($event)"
       >
-        @for (task of column.list; track $index) {
+        @for (task of column.list; track task.id) {
         <app-kanban-task-card
           [task]="task"
           cdkDrag
@@ -32,7 +33,7 @@
       </div>
       @if (draggingData) {
         @if (draggingData.statuses[column.status]) {
-          @for (item of draggingData.statuses[column.status]!.transitions; track $index) {
+          @for (item of draggingData.statuses[column.status]!.transitions; track item) {
             <div
               class="placeholder-list"
               cdkDropList
