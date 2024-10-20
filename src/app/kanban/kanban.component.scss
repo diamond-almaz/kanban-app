@@ -38,6 +38,10 @@ $draggingCompleted: green;
           overflow-y: auto;
         }
 
+        .cdk-drag-placeholder {
+          display: none;
+        }
+
         .placeholder-list {
           position: absolute;
           top: 0;
@@ -55,7 +59,7 @@ $draggingCompleted: green;
       &.waiting {
         .placeholder-list {
           border-color: $draggingWaiting;
-          &:hover {
+          &.cdk-drop-list-dragging {
             background-color: rgba($draggingWaiting, 0.1);
           }
         }
@@ -63,7 +67,7 @@ $draggingCompleted: green;
       &.paused {
         .placeholder-list {
           border-color: $draggingPaused;
-          &:hover {
+          &.cdk-drop-list-dragging {
             background-color: rgba($draggingPaused, 0.1);
           }
         }
@@ -71,7 +75,7 @@ $draggingCompleted: green;
       &.in-progress {
         .placeholder-list {
           border-color: $draggingInProgress;
-          &:hover {
+          &.cdk-drop-list-dragging {
             background-color: rgba($draggingInProgress, 0.1);
           }
         }
@@ -80,7 +84,7 @@ $draggingCompleted: green;
       &.completed {
         .placeholder-list {
           border-color: $draggingCompleted;
-          &:hover {
+          &.cdk-drop-list-dragging {
             background-color: rgba($draggingCompleted, 0.1);
           }
         }

@@ -47,6 +47,7 @@ export class KanbanComponent implements OnInit {
       [key in TaskStatus]?: {
         transitions: TaskTransitions[]}
     },
+    task: ITask;
   }
 
   TaskStatus = TaskStatus;
@@ -104,6 +105,7 @@ export class KanbanComponent implements OnInit {
               transitions: [TaskTransitions.return],
             }
           },
+          task,
         }
         break;
       }
@@ -114,6 +116,7 @@ export class KanbanComponent implements OnInit {
               transitions: [TaskTransitions.toWork],
             }
           },
+          task,
         }
         break;
       }
@@ -124,6 +127,7 @@ export class KanbanComponent implements OnInit {
               transitions: [TaskTransitions.return],
             }
           },
+          task,
         }
         break;
       }
@@ -137,6 +141,7 @@ export class KanbanComponent implements OnInit {
               transitions: [TaskTransitions.toPause],
             },
           },
+          task,
         }
         break;
       }
@@ -161,3 +166,4 @@ export class KanbanComponent implements OnInit {
     return false;
   }
 }
+
