@@ -1,4 +1,4 @@
-<main cdkDropListGroup>
+<main #mainRef cdkDropListGroup>
   @if (columns) { @for (column of columns; track column.status) {
   <div
     class="column"
@@ -13,18 +13,22 @@
       <div
         class="tasks-list"
         cdkDropList
-        cdkDropListOrientation="vertical"
         [id]="column.status"
         [cdkDropListSortingDisabled]="true"
-        (cdkDropListEntered)="cdkDropListEntered($event)"
       >
         @for (task of column.list; track task.id) {
+          @if (draggingData?.draggedItem?.task?.status === column.status && draggingData?.draggedItem?.index === $index) {
+            <app-kanban-task-card
+              class="gray-overlay"
+              [task]="draggingData!.draggedItem!.task"
+            />
+          }
         <app-kanban-task-card
           [task]="task"
           cdkDrag
           [cdkDragData]="task"
-          (cdkDragStarted)="onDragStarted($event)"
-          (cdkDragEnded)="onDragEnded()"
+          [cdkDragBoundary]="mainRef"
+          (cdkDragStarted)="onDragStarted($event, $index)"
           (cdkDragDropped)="onDropListDropped($event)"
         />
       }
@@ -36,9 +40,7 @@
               class="placeholder-list"
               cdkDropList
               [id]="item"
-              [cdkDropListOrientation]="'vertical'"
               [cdkDropListSortingDisabled]="true"
-              (cdkDropListEntered)="cdkDropListEntered($event)"
             ></div>
           }
         }

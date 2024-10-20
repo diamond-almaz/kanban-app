@@ -2,5 +2,5 @@
   <h2>Kanban</h2>
 </header>
 <main>
-  <app-kanban />
+  <app-kanban [tasks]="tasks" (taskUpdated)="taskUpdated($event)"/>
 </main>

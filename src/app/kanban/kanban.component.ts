@@ -1,12 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { ITask } from '../types/interfaces/task.interface';
 import { TaskStatus } from '../types/enums/task-status.enum';
-import { tasksList } from './mock-data';
 import { CommonModule } from '@angular/common';
 import {MatBadgeModule} from '@angular/material/badge';
 import { KanbanTaskCardComponent } from './kanban-task-card/kanban-task-card.component';
-import {CdkDragDrop, CdkDragEnter, CdkDragStart, DragDropModule} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragStart, DragDropModule} from '@angular/cdk/drag-drop';
 import { TaskTransitions } from '../types/enums/task-transitions.enum';
+import { ITaskUpdatedData } from '../types/interfaces/task-updated-data.interface';
 
 const TASK_COLUMN_TITLES = {
   [TaskStatus.Waiting]: 'Waiting',
@@ -38,16 +38,21 @@ interface ITaskColumn {
   templateUrl: './kanban.component.html',
   styleUrl: './kanban.component.scss',
 })
-export class KanbanComponent implements OnInit {
+export class KanbanComponent implements OnChanges {
+  @Input({required: true}) tasks!: ITask[];
+  @Output() taskUpdated = new EventEmitter<ITaskUpdatedData>();
   columns?: ITaskColumn[];
-  tasks = tasksList;
+
 
   draggingData?: {
     statuses: {
       [key in TaskStatus]?: {
         transitions: TaskTransitions[]}
     },
-    task: ITask;
+    draggedItem: {
+      task: ITask;
+      index: number;
+    }
   }
 
   TaskStatus = TaskStatus;
@@ -55,7 +60,7 @@ export class KanbanComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef) {}
 
-  ngOnInit() {
+  ngOnChanges() {
     this.columns = this.computeColumns();
   }
 
@@ -92,78 +97,87 @@ export class KanbanComponent implements OnInit {
 
   // ----------------------------------------------
 
-  onDragStarted(event: CdkDragStart<ITask>) {
+  onDragStarted(event: CdkDragStart<ITask>, index: number) {
     const task = event.source.data;
+    let statuses: {
+      [key in TaskStatus]?: {
+        transitions: TaskTransitions[]}
+    } = {};
     switch (task.status) {
       case TaskStatus.Paused: {
-        this.draggingData = {
-          statuses: {
+          statuses = {
             [TaskStatus.InProgress]: {
               transitions: [TaskTransitions.toWork],
             },
             [TaskStatus.Waiting]: {
               transitions: [TaskTransitions.return],
             }
-          },
-          task,
+          };
         }
         break;
-      }
       case TaskStatus.Waiting: {
-        this.draggingData = {
-          statuses: {
+          statuses = {
             [TaskStatus.InProgress]: {
               transitions: [TaskTransitions.toWork],
-            }
-          },
-          task,
-        }
+              }
+            };
         break;
       }
       case TaskStatus.Completed: {
-        this.draggingData = {
-          statuses: {
+          statuses = {
             [TaskStatus.Waiting]: {
               transitions: [TaskTransitions.return],
             }
-          },
-          task,
-        }
+        };
         break;
       }
       case TaskStatus.InProgress: {
-        this.draggingData = {
-          statuses: {
+          statuses = {
             [TaskStatus.Completed]: {
               transitions: [TaskTransitions.toClose],
             },
             [TaskStatus.Paused]: {
               transitions: [TaskTransitions.toPause],
             },
-          },
-          task,
-        }
+          };
         break;
+      }
+    }
+
+    this.draggingData = {
+      statuses,
+      draggedItem: {
+        task, index
       }
     }
     this.cdr.detectChanges();
   }
 
-  onDragEnded() {
-    this.draggingData = undefined;
-  }
-
   onDropListDropped(ev: CdkDragDrop<ITask>) {
-    console.log('onDropListDropped', ev)
-  }
+    this.draggingData = undefined;
+    if (ev.container.id === ev.previousContainer.id) return;
+    const { id } = ev.item.data as ITask;
+    let newStatus: TaskStatus | undefined;
+    switch (ev.container.id) {
+      case TaskTransitions.return: {
+        newStatus = TaskStatus.Waiting;
+        break;
+      }
+      case TaskTransitions.toPause: {
+        newStatus = TaskStatus.Paused;
+        break;
+      }
+      case TaskTransitions.toWork: {
+        newStatus = TaskStatus.InProgress;
+        break;
+      }
+      case TaskTransitions.toClose: {
+        newStatus = TaskStatus.Completed;
+      }
+    }
+    if (!newStatus) return;
 
-  cdkDropListEntered(ev: CdkDragEnter) {
-    console.log(this.draggingData?.statuses)
-    console.log('entered to', ev.container.id)
-  }
-
-  cdkDropListEnterPredicate() {
-    return false;
+    this.taskUpdated.emit({id, newStatus})
   }
 }
 

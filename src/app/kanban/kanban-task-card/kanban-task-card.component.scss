@@ -1,1 +1,19 @@
 
+:host {
+  &.gray-overlay {
+    mat-card {
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(205, 205, 205);
+        z-index: 1; /* Обеспечивает, что серый фон будет над контентом */
+        pointer-events: none; /* Чтобы серый фон не блокировал клики по контенту */
+      }
+    }
+  }
+}
